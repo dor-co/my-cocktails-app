@@ -27,12 +27,18 @@ export interface IRecipe {
 
 export interface IPagination {
   page: number;
-  setPage: (page: number) => void;
   totalPages: number;
+  onClick: (value: number) => void;
 }
 
 export interface IButton {
   label: string;
   onClick: () => void;
   disabled?: boolean;
+}
+
+export interface IInput {
+  value: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
 }

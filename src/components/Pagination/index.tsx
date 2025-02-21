@@ -3,18 +3,18 @@ import "./style.scss";
 import { IPagination } from "../../common/Types";
 import TSButton from "../TSButton";
 
-const Pagination: React.FC<IPagination> = ({ page, setPage, totalPages }) => {
+const Pagination: React.FC<IPagination> = ({ page, totalPages, onClick }) => {
   return (
     <>
       <TSButton
         label="Prev"
         disabled={page === 0}
-        onClick={() => setPage(page - 1)}
+        onClick={() => onClick(-1)}
       />
       <TSButton
         label="Next"
         disabled={page === totalPages}
-        onClick={() => setPage(page + 1)}
+        onClick={() => onClick(1)}
       />
     </>
   );
