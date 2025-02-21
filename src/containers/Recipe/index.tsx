@@ -8,16 +8,16 @@ const Recipe: React.FC = () => {
   const [recipe, setRecipe] = useState<IRecipe | null>(null);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get("id");
+  const RECIPE_API_URL = import.meta.env.VITE_RECIPE_API_URL;
 
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
         const response = await axios.get<{ drinks: IRecipe[] }>(
-          `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`
+          `${RECIPE_API_URL}${id}`
         );
         setRecipe(response.data.drinks[0]);
       } catch (err) {

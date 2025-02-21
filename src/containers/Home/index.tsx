@@ -13,13 +13,14 @@ const Home: React.FC = () => {
   const [page, setPage] = useState<number>(0);
   const [totalResults, setTotalResults] = useState<number>(0);
   const numOfItemsInPage = 8;
+  const COCKTAILS_API_URL = import.meta.env.VITE_COCKTAILS_API_URL;
 
   useEffect(() => {
     const fetchCocktails = async () => {
       setLoading(true);
       try {
         const response = await axios.get<{ drinks: ICocktail[] }>(
-          "https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=Cocktail"
+          COCKTAILS_API_URL
         );
         setTotalResults(response.data.drinks.length);
         setCocktails(
