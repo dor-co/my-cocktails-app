@@ -65,6 +65,11 @@ const Home: React.FC = () => {
   };
 
   const onHandleChangePage = (value: number) => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
     const currPage = page + value;
 
     setCocktails(
