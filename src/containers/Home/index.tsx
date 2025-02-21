@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
 import axios from "axios";
-import { ICocktail } from "../../common/Types";
+import { ICocktail, IForm } from "../../common/Types";
 import Card from "../../components/Card";
 import Pagination from "../../components/Pagination";
 import TSInput from "../../components/TSInput";
 import TSButton from "../../components/TSButton";
+import { Modal } from "antd";
+import { Form, Formik } from "formik";
+import * as Yup from "yup";
+import TSForm from "../../components/TSForm";
 
 const Home: React.FC = () => {
   const [cocktails, setCocktails] = useState<ICocktail[]>([]);
@@ -15,6 +19,7 @@ const Home: React.FC = () => {
   const [page, setPage] = useState<number>(0);
   const [totalResults, setTotalResults] = useState<number>(0);
   const [searchValue, setSearchValue] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const numOfItemsInPage = 8;
   const COCKTAILS_API_URL = import.meta.env.VITE_COCKTAILS_API_URL;
   const SEARCH_API_URL = import.meta.env.VITE_SEARCH_API_URL;
@@ -87,9 +92,30 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <TSInput value={searchValue} onChange={onHandleChangeSearch} />
-      <TSButton label="Search" onClick={onSearch} />
-      <TSButton label="Add Cocktail" onClick={() => {}} />
+      <div className="actions-container">
+        <div className="search-container">
+          <TSInput
+            value={searchValue}
+            onChange={onHandleChangeSearch}
+            placeholder="Cocktail name..."
+          />
+          <TSButton label="Search" onClick={onSearch} />
+        </div>
+        <TSButton
+          label="Add Cocktail"
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        />
+        <Modal
+          title="Add Cocktail"
+          open={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          footer={null}
+        >
+          <TSForm />
+        </Modal>
+      </div>
       <div className="home-container">
         {cocktails.map((item) => {
           return (

@@ -33,12 +33,21 @@ export interface IPagination {
 
 export interface IButton {
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
   disabled?: boolean;
+  htmlType?: "submit" | "button" | "reset";
 }
 
 export interface IInput {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
+  type?: string;
+  name?: string;
+}
+
+export interface IForm {
+  cocktailName: string;
+  cocktailIngredients: string;
+  cocktailInstructions: string;
 }

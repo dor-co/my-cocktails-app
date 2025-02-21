@@ -23,3 +23,16 @@
     }
   }
 }
+
+.actions-container {
+  display: flex;
+  justify-content: space-between;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .search-container {
+    display: flex;
+    gap: 10px;
+  }
+}
