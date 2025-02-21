@@ -30,3 +30,9 @@ export interface IPagination {
   setPage: (page: number) => void;
   totalPages: number;
 }
+
+export interface IButton {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}

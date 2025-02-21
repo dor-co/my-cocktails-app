@@ -4,7 +4,8 @@ import axios from "axios";
 import { ICocktail } from "../../common/Types";
 import Card from "../../components/Card";
 import Pagination from "../../components/Pagination";
-import Input from "../../components/Input";
+import TSInput from "../../components/TSInput";
+import TSButton from "../../components/TSButton";
 
 const Home: React.FC = () => {
   const [cocktails, setCocktails] = useState<ICocktail[]>([]);
@@ -46,9 +47,9 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Input />
-      <button>Search</button>
-      <button>Add Cocktail</button>
+      <TSInput />
+      <TSButton label="Search" onClick={() => {}} />
+      <TSButton label="Add Cocktail" onClick={() => {}} />
       <div className="home-container">
         {cocktails.map((item) => {
           return (
@@ -60,11 +61,13 @@ const Home: React.FC = () => {
           );
         })}
 
-        <Pagination
-          page={page}
-          setPage={setPage}
-          totalPages={Math.floor(totalResults / numOfItemsInPage)}
-        />
+        <div className="pagination-container">
+          <Pagination
+            page={page}
+            setPage={setPage}
+            totalPages={Math.floor(totalResults / numOfItemsInPage)}
+          />
+        </div>
       </div>
     </>
   );
