@@ -51,3 +51,7 @@ export interface IForm {
   cocktailIngredients: string;
   cocktailInstructions: string;
 }
+
+export interface IFormProps {
+  onSubmit: (values: IForm) => void;
+}

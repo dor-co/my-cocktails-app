@@ -87,6 +87,16 @@ const Home: React.FC = () => {
     setPage(currPage);
   };
 
+  const onSubmit = (values: IForm) => {
+    console.log(values);
+    const existingData = JSON.parse(
+      localStorage.getItem("cocktailsData") || "[]"
+    );
+    const updatedData = [...existingData, values];
+    localStorage.setItem("cocktailsData", JSON.stringify(updatedData));
+    setIsModalOpen(false);
+  };
+
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
@@ -113,7 +123,7 @@ const Home: React.FC = () => {
           onCancel={() => setIsModalOpen(false)}
           footer={null}
         >
-          <TSForm />
+          <TSForm onSubmit={onSubmit} />
         </Modal>
       </div>
       <div className="home-container">

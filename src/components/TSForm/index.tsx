@@ -1,13 +1,12 @@
 import React from "react";
 import "./style.scss";
-import { Input } from "antd";
-import { IForm } from "../../common/Types";
+import { IForm, IFormProps } from "../../common/Types";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import TSInput from "../TSInput";
 import TSButton from "../TSButton";
 
-const TSForm: React.FC = () => {
+const TSForm: React.FC<IFormProps> = ({ onSubmit }) => {
   return (
     <Formik<IForm>
       initialValues={{
@@ -24,11 +23,12 @@ const TSForm: React.FC = () => {
           "Cocktail Instructions is required"
         ),
       })}
-      onSubmit={(values) => {
-        console.log(values);
+      onSubmit={(values: IForm, { resetForm }) => {
+        onSubmit(values);
+        resetForm();
       }}
     >
-      {({ values, errors, handleChange }) => (
+      {({ values, errors, handleChange, touched }) => (
         <Form className="form-container">
           <div>
             <TSInput
@@ -37,7 +37,7 @@ const TSForm: React.FC = () => {
               onChange={handleChange}
               placeholder="Cocktail Name"
             />
-            {errors.cocktailName && (
+            {errors.cocktailName && touched.cocktailName && (
               <div className="error">{errors.cocktailName}</div>
             )}
           </div>
@@ -49,7 +49,7 @@ const TSForm: React.FC = () => {
               onChange={handleChange}
               placeholder="Cocktail Ingredients"
             />
-            {errors.cocktailIngredients && (
+            {errors.cocktailIngredients && touched.cocktailIngredients && (
               <div className="error">{errors.cocktailIngredients}</div>
             )}
           </div>
@@ -61,7 +61,7 @@ const TSForm: React.FC = () => {
               onChange={handleChange}
               placeholder="Cocktail Instructions"
             />
-            {errors.cocktailInstructions && (
+            {errors.cocktailInstructions && touched.cocktailInstructions && (
               <div className="error">{errors.cocktailInstructions}</div>
             )}
           </div>
