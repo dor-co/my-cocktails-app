@@ -1,13 +1,23 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { ICocktail } from "../../common/Types";
+import { RootState } from "../../redux/store";
 import "./style.scss";
 
 const Card: React.FC<ICocktail> = ({ strDrink, strDrinkThumb, idDrink }) => {
+  const { cocktailsList } = useSelector((state: RootState) => state.cocktail);
+  const cocktailItem = cocktailsList.filter((x) => x.idDrink === idDrink)[0];
+
   return (
-    <a href={`/Recipe?id=${idDrink}`} className="card-container">
+    <Link
+      to={`/Recipe?id=${idDrink}`}
+      className="card-container"
+      state={{ cocktailItem }}
+    >
       <img className="image" src={strDrinkThumb} />
       <h2 className="title">{strDrink}</h2>
-    </a>
+    </Link>
   );
 };
 

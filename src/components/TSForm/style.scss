@@ -1,0 +1,18 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .error {
+    color: red;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  .file-label:hover {
+    color: #4096ff;
+    cursor: pointer;
+  }
+}

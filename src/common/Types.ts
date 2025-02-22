@@ -1,3 +1,5 @@
+import { FormikProps } from "formik";
+
 export interface ICocktail {
   strDrink: string;
   strDrinkThumb: string;
@@ -27,6 +29,47 @@ export interface IRecipe {
 
 export interface IPagination {
   page: number;
-  setPage: (page: number) => void;
   totalPages: number;
+  onClick: (value: number) => void;
+}
+
+export interface IButton {
+  label: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  htmlType?: "submit" | "button" | "reset";
+}
+
+export interface IInput {
+  value: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  type?: string;
+  name?: string;
+}
+
+export interface IForm {
+  strDrink: string;
+  strIngredient: string;
+  strInstructions: string;
+  strDrinkThumb: string;
+}
+
+export interface IFormProps {
+  onSubmit: (values: IForm) => void;
+  cocktailAddedText: string;
+  formRef?: React.RefObject<FormikProps<IForm>>;
+}
+
+export interface ICocktailState {
+  numOfResults: number;
+  cocktailsList: ICocktail[];
+}
+
+export interface ICocktailItem {
+  idDrink: string;
+  strDrink: string;
+  strDrinkThumb?: string;
+  strIngredient?: string;
+  strInstructions?: string;
 }

@@ -1,34 +1,53 @@
-import React, { useEffect, useState } from "react";
-import "./style.scss";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { ICocktail } from "../../common/Types";
+import { FormikProps } from "formik";
+import { Modal } from "antd";
+import { useDispatch, useSelector } from "react-redux";
 import Card from "../../components/Card";
+import { ICocktail, IForm } from "../../common/Types";
+import Loader from "../../components/Loader";
 import Pagination from "../../components/Pagination";
-import Input from "../../components/Input";
+import { RootState } from "../../redux/store";
+import { setCocktailsList, setNumOfResults } from "../../redux/cocktailSlice";
+import TSButton from "../../components/TSButton";
+import TSForm from "../../components/TSForm";
+import TSInput from "../../components/TSInput";
+import "./style.scss";
 
 const Home: React.FC = () => {
   const [cocktails, setCocktails] = useState<ICocktail[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
-  const [totalResults, setTotalResults] = useState<number>(0);
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [cocktailAddedText, setCocktailAddedText] = useState<string>("");
+  const formRef = useRef<FormikProps<IForm>>(null!);
   const numOfItemsInPage = 8;
+  const COCKTAILS_API_URL = import.meta.env.VITE_COCKTAILS_API_URL;
+  const dispatch = useDispatch();
+  const { numOfResults, cocktailsList } = useSelector(
+    (state: RootState) => state.cocktail
+  );
 
   useEffect(() => {
     const fetchCocktails = async () => {
       setLoading(true);
       try {
         const response = await axios.get<{ drinks: ICocktail[] }>(
-          "https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=Cocktail"
+          COCKTAILS_API_URL
         );
-        setTotalResults(response.data.drinks.length);
-        setCocktails(
-          response.data.drinks.filter(
-            (_, i) =>
-              page * numOfItemsInPage <= i &&
-              i <= page * numOfItemsInPage + numOfItemsInPage - 1
-          )
-        );
+
+        const drinks = [
+          ...JSON.parse(
+            localStorage.getItem("cocktailsData") || "[]"
+          ).reverse(),
+          ...response.data.drinks,
+        ];
+
+        dispatch(setNumOfResults(drinks.length));
+        dispatch(setCocktailsList(drinks));
+        setCocktails(drinks.filter((_, i) => i < numOfItemsInPage));
       } catch (err) {
         setError("Failed to fetch cocktails");
         console.error(err);
@@ -38,16 +57,109 @@ const Home: React.FC = () => {
     };
 
     fetchCocktails();
-  }, [page]);
+  }, []);
 
-  if (isLoading) return <p>Loading...</p>;
+  const onHandleChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
+
+  const onSearch = async () => {
+    setPage(0);
+    setLoading(true);
+    try {
+      const response =
+        searchValue.trim() === ""
+          ? cocktailsList
+          : cocktailsList.filter((x) =>
+              x.strDrink.toLowerCase().includes(searchValue.toLowerCase())
+            );
+
+      dispatch(setNumOfResults(response.length));
+      setCocktails(response.filter((_, i) => i < numOfItemsInPage));
+    } catch (err) {
+      setError("Failed to fetch search cocktails");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onHandleChangePage = (value: number) => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
+    const currPage = page + value;
+
+    setCocktails(
+      cocktailsList.filter(
+        (_, i) =>
+          currPage * numOfItemsInPage <= i &&
+          i <= currPage * numOfItemsInPage + numOfItemsInPage - 1
+      )
+    );
+    setPage(currPage);
+  };
+
+  const onSubmit = (values: IForm) => {
+    const existingData = JSON.parse(
+      localStorage.getItem("cocktailsData") || "[]"
+    );
+    const updatedData = [
+      ...existingData,
+      { ...values, idDrink: createDrinkId(), isAdded: true },
+    ];
+    localStorage.setItem("cocktailsData", JSON.stringify(updatedData));
+    setCocktailAddedText("Cocktail added successfully!");
+  };
+
+  const createDrinkId = (): string => {
+    let newId: string;
+    do {
+      newId = Math.floor(10000 + Math.random() * 90000).toString();
+    } while (cocktailsList.some((drink) => drink.idDrink === newId));
+    return newId;
+  };
+
+  const onCloseModal = () => {
+    setIsModalOpen(false);
+    setCocktailAddedText("");
+    formRef?.current.resetForm();
+  };
+
+  if (isLoading) return <Loader />;
   if (error) return <p>{error}</p>;
-
   return (
     <>
-      <Input />
-      <button>Search</button>
-      <button>Add Cocktail</button>
+      <div className="actions-container">
+        <div className="search-container">
+          <TSInput
+            value={searchValue}
+            onChange={onHandleChangeSearch}
+            placeholder="Cocktail name..."
+          />
+          <TSButton label="Search" onClick={onSearch} />
+        </div>
+        <TSButton
+          label="Add Cocktail"
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        />
+        <Modal
+          title="Add Cocktail"
+          open={isModalOpen}
+          onCancel={onCloseModal}
+          footer={null}
+        >
+          <TSForm
+            onSubmit={onSubmit}
+            cocktailAddedText={cocktailAddedText}
+            formRef={formRef}
+          />
+        </Modal>
+      </div>
       <div className="home-container">
         {cocktails.map((item) => {
           return (
@@ -59,11 +171,13 @@ const Home: React.FC = () => {
           );
         })}
 
-        <Pagination
-          page={page}
-          setPage={setPage}
-          totalPages={Math.floor(totalResults / numOfItemsInPage)}
-        />
+        <div className="pagination-container">
+          <Pagination
+            page={page}
+            totalPages={Math.floor(numOfResults / numOfItemsInPage)}
+            onClick={onHandleChangePage}
+          />
+        </div>
       </div>
     </>
   );
