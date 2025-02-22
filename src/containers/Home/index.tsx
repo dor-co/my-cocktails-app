@@ -161,7 +161,6 @@ const Home: React.FC = () => {
               strDrink={item.strDrink}
               strDrinkThumb={item.strDrinkThumb}
               idDrink={item.idDrink}
-              cocktailItem={item}
             />
           );
         })}

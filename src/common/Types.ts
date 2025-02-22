@@ -2,7 +2,6 @@ export interface ICocktail {
   strDrink: string;
   strDrinkThumb: string;
   idDrink: string;
-  cocktailItem: ICocktailItem;
 }
 
 export interface IRecipe {
@@ -51,6 +50,7 @@ export interface IForm {
   strDrink: string;
   strIngredient: string;
   strInstructions: string;
+  strDrinkThumb: string;
 }
 
 export interface IFormProps {

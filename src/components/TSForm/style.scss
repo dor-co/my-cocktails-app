@@ -6,4 +6,13 @@
   .error {
     color: red;
   }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  .file-label:hover {
+    color: #4096ff;
+    cursor: pointer;
+  }
 }

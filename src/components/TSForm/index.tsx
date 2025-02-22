@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./style.scss";
 import { IForm, IFormProps } from "../../common/Types";
 import { Form, Formik } from "formik";
@@ -7,6 +7,8 @@ import TSInput from "../TSInput";
 import TSButton from "../TSButton";
 
 const TSForm: React.FC<IFormProps> = ({ onSubmit, cocktailAddedText }) => {
+  const [imageName, setImageName] = useState<string>("");
+
   return (
     <>
       {cocktailAddedText ? (
@@ -17,6 +19,7 @@ const TSForm: React.FC<IFormProps> = ({ onSubmit, cocktailAddedText }) => {
             strDrink: "",
             strIngredient: "",
             strInstructions: "",
+            strDrinkThumb: "",
           }}
           validationSchema={Yup.object({
             strDrink: Yup.string().required("Cocktail name is required"),
@@ -32,7 +35,7 @@ const TSForm: React.FC<IFormProps> = ({ onSubmit, cocktailAddedText }) => {
             resetForm();
           }}
         >
-          {({ values, errors, handleChange, touched }) => (
+          {({ values, errors, handleChange, touched, setFieldValue }) => (
             <Form className="form-container">
               <div>
                 <TSInput
@@ -67,6 +70,32 @@ const TSForm: React.FC<IFormProps> = ({ onSubmit, cocktailAddedText }) => {
                 />
                 {errors.strInstructions && touched.strInstructions && (
                   <div className="error">{errors.strInstructions}</div>
+                )}
+              </div>
+
+              <div>
+                <input
+                  type="file"
+                  id="file"
+                  name="strDrinkThumb"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setImageName(file.name);
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setFieldValue("strDrinkThumb", reader.result as string);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+                <label className="file-label" htmlFor="file">
+                  {imageName ? imageName : "Upload Cocktail Image"}
+                </label>
+                {errors.strDrinkThumb && touched.strDrinkThumb && (
+                  <div className="error">{errors.strDrinkThumb}</div>
                 )}
               </div>
 
