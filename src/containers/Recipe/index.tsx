@@ -12,23 +12,29 @@ const Recipe: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get("id");
   const RECIPE_API_URL = import.meta.env.VITE_RECIPE_API_URL;
+  const cocktailData = location.state?.cocktailItem;
 
   useEffect(() => {
-    const fetchRecipe = async () => {
-      try {
-        const response = await axios.get<{ drinks: IRecipe[] }>(
-          `${RECIPE_API_URL}${id}`
-        );
-        setRecipe(response.data.drinks[0]);
-      } catch (err) {
-        setError("Failed to fetch recipe");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (cocktailData.isAdded) {
+      setRecipe(cocktailData);
+      setLoading(false);
+    } else {
+      const fetchRecipe = async () => {
+        try {
+          const response = await axios.get<{ drinks: IRecipe[] }>(
+            `${RECIPE_API_URL}${id}`
+          );
+          setRecipe(response.data.drinks[0]);
+        } catch (err) {
+          setError("Failed to fetch recipe");
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    fetchRecipe();
+      fetchRecipe();
+    }
   }, []);
 
   if (isLoading) return <p>Loading...</p>;
@@ -49,7 +55,7 @@ const Recipe: React.FC = () => {
               Object.keys(recipe)
                 .filter((key) => key.startsWith("strIngredient"))
                 .map((key) => recipe[key as keyof IRecipe])
-                .filter((ingredient) => ingredient) // Filter out any null or empty ingredients
+                .filter((ingredient) => ingredient)
                 .join(", ")}
           </p>
         </div>

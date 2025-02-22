@@ -7,22 +7,26 @@ import Pagination from "../../components/Pagination";
 import TSInput from "../../components/TSInput";
 import TSButton from "../../components/TSButton";
 import { Modal } from "antd";
-import { Form, Formik } from "formik";
-import * as Yup from "yup";
 import TSForm from "../../components/TSForm";
+import { useDispatch, useSelector } from "react-redux";
+import { setCocktailsList, setNumOfResults } from "../../redux/cocktailSlice";
+import { RootState } from "../../redux/store";
 
 const Home: React.FC = () => {
   const [cocktails, setCocktails] = useState<ICocktail[]>([]);
-  const [allCocktails, setAllCocktails] = useState<ICocktail[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
-  const [totalResults, setTotalResults] = useState<number>(0);
   const [searchValue, setSearchValue] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [cocktailAddedText, setCocktailAddedText] = useState<string>("");
   const numOfItemsInPage = 8;
   const COCKTAILS_API_URL = import.meta.env.VITE_COCKTAILS_API_URL;
   const SEARCH_API_URL = import.meta.env.VITE_SEARCH_API_URL;
+  const dispatch = useDispatch();
+  const { numOfResults, cocktailsList } = useSelector(
+    (state: RootState) => state.cocktail
+  );
 
   useEffect(() => {
     const fetchCocktails = async () => {
@@ -31,11 +35,17 @@ const Home: React.FC = () => {
         const response = await axios.get<{ drinks: ICocktail[] }>(
           COCKTAILS_API_URL
         );
-        setTotalResults(response.data.drinks.length);
-        setAllCocktails(response.data.drinks);
-        setCocktails(
-          response.data.drinks.filter((_, i) => i < numOfItemsInPage)
-        );
+
+        const drinks = [
+          ...JSON.parse(
+            localStorage.getItem("cocktailsData") || "[]"
+          ).reverse(),
+          ...response.data.drinks,
+        ];
+
+        dispatch(setNumOfResults(drinks.length));
+        dispatch(setCocktailsList(drinks));
+        setCocktails(drinks.filter((_, i) => i < numOfItemsInPage));
       } catch (err) {
         setError("Failed to fetch cocktails");
         console.error(err);
@@ -55,12 +65,15 @@ const Home: React.FC = () => {
     setPage(0);
     setLoading(true);
     try {
-      const response = await axios.get<{ drinks: ICocktail[] }>(
-        `${SEARCH_API_URL}${searchValue}`
-      );
-      setTotalResults(response.data.drinks.length);
-      setAllCocktails(response.data.drinks);
-      setCocktails(response.data.drinks.filter((_, i) => i < numOfItemsInPage));
+      const response =
+        searchValue.trim() === ""
+          ? cocktailsList
+          : cocktailsList.filter((x) =>
+              x.strDrink.toLowerCase().includes(searchValue.toLowerCase())
+            );
+
+      dispatch(setNumOfResults(response.length));
+      setCocktails(response.filter((_, i) => i < numOfItemsInPage));
     } catch (err) {
       setError("Failed to fetch search cocktails");
       console.error(err);
@@ -78,7 +91,7 @@ const Home: React.FC = () => {
     const currPage = page + value;
 
     setCocktails(
-      allCocktails.filter(
+      cocktailsList.filter(
         (_, i) =>
           currPage * numOfItemsInPage <= i &&
           i <= currPage * numOfItemsInPage + numOfItemsInPage - 1
@@ -88,13 +101,28 @@ const Home: React.FC = () => {
   };
 
   const onSubmit = (values: IForm) => {
-    console.log(values);
     const existingData = JSON.parse(
       localStorage.getItem("cocktailsData") || "[]"
     );
-    const updatedData = [...existingData, values];
+    const updatedData = [
+      ...existingData,
+      { ...values, idDrink: createDrinkId(), isAdded: true },
+    ];
     localStorage.setItem("cocktailsData", JSON.stringify(updatedData));
+    setCocktailAddedText("Cocktail added successfully!");
+  };
+
+  const createDrinkId = (): string => {
+    let newId: string;
+    do {
+      newId = Math.floor(10000 + Math.random() * 90000).toString();
+    } while (cocktailsList.some((drink) => drink.idDrink === newId));
+    return newId;
+  };
+
+  const onCloseModal = () => {
     setIsModalOpen(false);
+    setCocktailAddedText("");
   };
 
   if (isLoading) return <p>Loading...</p>;
@@ -120,10 +148,10 @@ const Home: React.FC = () => {
         <Modal
           title="Add Cocktail"
           open={isModalOpen}
-          onCancel={() => setIsModalOpen(false)}
+          onCancel={onCloseModal}
           footer={null}
         >
-          <TSForm onSubmit={onSubmit} />
+          <TSForm onSubmit={onSubmit} cocktailAddedText={cocktailAddedText} />
         </Modal>
       </div>
       <div className="home-container">
@@ -133,6 +161,7 @@ const Home: React.FC = () => {
               strDrink={item.strDrink}
               strDrinkThumb={item.strDrinkThumb}
               idDrink={item.idDrink}
+              cocktailItem={item}
             />
           );
         })}
@@ -140,7 +169,7 @@ const Home: React.FC = () => {
         <div className="pagination-container">
           <Pagination
             page={page}
-            totalPages={Math.floor(totalResults / numOfItemsInPage)}
+            totalPages={Math.floor(numOfResults / numOfItemsInPage)}
             onClick={onHandleChangePage}
           />
         </div>

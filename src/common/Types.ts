@@ -2,6 +2,7 @@ export interface ICocktail {
   strDrink: string;
   strDrinkThumb: string;
   idDrink: string;
+  cocktailItem: ICocktailItem;
 }
 
 export interface IRecipe {
@@ -47,11 +48,25 @@ export interface IInput {
 }
 
 export interface IForm {
-  cocktailName: string;
-  cocktailIngredients: string;
-  cocktailInstructions: string;
+  strDrink: string;
+  strIngredient: string;
+  strInstructions: string;
 }
 
 export interface IFormProps {
   onSubmit: (values: IForm) => void;
+  cocktailAddedText: string;
+}
+
+export interface ICocktailState {
+  numOfResults: number;
+  cocktailsList: ICocktail[];
+}
+
+export interface ICocktailItem {
+  idDrink: string;
+  strDrink: string;
+  strDrinkThumb?: string;
+  strIngredient?: string;
+  strInstructions?: string;
 }

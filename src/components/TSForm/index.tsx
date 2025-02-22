@@ -6,70 +6,76 @@ import * as Yup from "yup";
 import TSInput from "../TSInput";
 import TSButton from "../TSButton";
 
-const TSForm: React.FC<IFormProps> = ({ onSubmit }) => {
+const TSForm: React.FC<IFormProps> = ({ onSubmit, cocktailAddedText }) => {
   return (
-    <Formik<IForm>
-      initialValues={{
-        cocktailName: "",
-        cocktailIngredients: "",
-        cocktailInstructions: "",
-      }}
-      validationSchema={Yup.object({
-        cocktailName: Yup.string().required("Cocktail name is required"),
-        cocktailIngredients: Yup.string().required(
-          "Cocktail ingredients is required"
-        ),
-        cocktailInstructions: Yup.string().required(
-          "Cocktail Instructions is required"
-        ),
-      })}
-      onSubmit={(values: IForm, { resetForm }) => {
-        onSubmit(values);
-        resetForm();
-      }}
-    >
-      {({ values, errors, handleChange, touched }) => (
-        <Form className="form-container">
-          <div>
-            <TSInput
-              name="cocktailName"
-              value={values.cocktailName}
-              onChange={handleChange}
-              placeholder="Cocktail Name"
-            />
-            {errors.cocktailName && touched.cocktailName && (
-              <div className="error">{errors.cocktailName}</div>
-            )}
-          </div>
+    <>
+      {cocktailAddedText ? (
+        <h2>{cocktailAddedText}</h2>
+      ) : (
+        <Formik<IForm>
+          initialValues={{
+            strDrink: "",
+            strIngredient: "",
+            strInstructions: "",
+          }}
+          validationSchema={Yup.object({
+            strDrink: Yup.string().required("Cocktail name is required"),
+            strIngredient: Yup.string().required(
+              "Cocktail ingredients is required"
+            ),
+            strInstructions: Yup.string().required(
+              "Cocktail Instructions is required"
+            ),
+          })}
+          onSubmit={(values: IForm, { resetForm }) => {
+            onSubmit(values);
+            resetForm();
+          }}
+        >
+          {({ values, errors, handleChange, touched }) => (
+            <Form className="form-container">
+              <div>
+                <TSInput
+                  name="strDrink"
+                  value={values.strDrink}
+                  onChange={handleChange}
+                  placeholder="Cocktail Name"
+                />
+                {errors.strDrink && touched.strDrink && (
+                  <div className="error">{errors.strDrink}</div>
+                )}
+              </div>
 
-          <div>
-            <TSInput
-              name="cocktailIngredients"
-              value={values.cocktailIngredients}
-              onChange={handleChange}
-              placeholder="Cocktail Ingredients"
-            />
-            {errors.cocktailIngredients && touched.cocktailIngredients && (
-              <div className="error">{errors.cocktailIngredients}</div>
-            )}
-          </div>
+              <div>
+                <TSInput
+                  name="strIngredient"
+                  value={values.strIngredient}
+                  onChange={handleChange}
+                  placeholder="Cocktail Ingredients"
+                />
+                {errors.strIngredient && touched.strIngredient && (
+                  <div className="error">{errors.strIngredient}</div>
+                )}
+              </div>
 
-          <div>
-            <TSInput
-              name="cocktailInstructions"
-              value={values.cocktailInstructions}
-              onChange={handleChange}
-              placeholder="Cocktail Instructions"
-            />
-            {errors.cocktailInstructions && touched.cocktailInstructions && (
-              <div className="error">{errors.cocktailInstructions}</div>
-            )}
-          </div>
+              <div>
+                <TSInput
+                  name="strInstructions"
+                  value={values.strInstructions}
+                  onChange={handleChange}
+                  placeholder="Cocktail Instructions"
+                />
+                {errors.strInstructions && touched.strInstructions && (
+                  <div className="error">{errors.strInstructions}</div>
+                )}
+              </div>
 
-          <TSButton label="Add" htmlType="submit" />
-        </Form>
+              <TSButton label="Add" htmlType="submit" />
+            </Form>
+          )}
+        </Formik>
       )}
-    </Formik>
+    </>
   );
 };
 
