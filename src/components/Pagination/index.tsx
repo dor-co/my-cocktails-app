@@ -1,7 +1,7 @@
 import React from "react";
-import "./style.scss";
 import { IPagination } from "../../common/Types";
 import TSButton from "../TSButton";
+import "./style.scss";
 
 const Pagination: React.FC<IPagination> = ({ page, totalPages, onClick }) => {
   return (

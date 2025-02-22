@@ -1,7 +1,8 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { IRecipe } from "../../common/Types";
+import Loader from "../../components/Loader";
 import "./style.scss";
 
 const Recipe: React.FC = () => {
@@ -37,7 +38,7 @@ const Recipe: React.FC = () => {
     }
   }, []);
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Loader />;
   if (error) return <p>{error}</p>;
 
   return (
@@ -46,10 +47,6 @@ const Recipe: React.FC = () => {
       <div className="recipe-details">
         <div>
           <p>
-            <strong>Recipe: </strong>
-            {recipe?.strInstructions}
-          </p>
-          <p>
             <strong>Ingredients: </strong>
             {recipe &&
               Object.keys(recipe)
@@ -57,6 +54,11 @@ const Recipe: React.FC = () => {
                 .map((key) => recipe[key as keyof IRecipe])
                 .filter((ingredient) => ingredient)
                 .join(", ")}
+          </p>
+          <br />
+          <p>
+            <strong>Recipe: </strong>
+            {recipe?.strInstructions}
           </p>
         </div>
         <img src={recipe?.strDrinkThumb} />

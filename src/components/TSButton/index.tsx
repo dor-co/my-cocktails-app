@@ -1,7 +1,7 @@
 import React from "react";
-import "./style.scss";
 import { Button } from "antd";
 import { IButton } from "../../common/Types";
+import "./style.scss";
 
 const TSButton: React.FC<IButton> = ({
   label,

@@ -1,3 +1,5 @@
+import { FormikProps } from "formik";
+
 export interface ICocktail {
   strDrink: string;
   strDrinkThumb: string;
@@ -56,6 +58,7 @@ export interface IForm {
 export interface IFormProps {
   onSubmit: (values: IForm) => void;
   cocktailAddedText: string;
+  formRef?: React.RefObject<FormikProps<IForm>>;
 }
 
 export interface ICocktailState {

@@ -1,9 +1,9 @@
 import React from "react";
-import { ICocktail } from "../../common/Types";
-import "./style.scss";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { ICocktail } from "../../common/Types";
 import { RootState } from "../../redux/store";
+import "./style.scss";
 
 const Card: React.FC<ICocktail> = ({ strDrink, strDrinkThumb, idDrink }) => {
   const { cocktailsList } = useSelector((state: RootState) => state.cocktail);

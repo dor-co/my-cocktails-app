@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from "react";
-import "./style.scss";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { ICocktail, IForm } from "../../common/Types";
-import Card from "../../components/Card";
-import Pagination from "../../components/Pagination";
-import TSInput from "../../components/TSInput";
-import TSButton from "../../components/TSButton";
+import { FormikProps } from "formik";
 import { Modal } from "antd";
-import TSForm from "../../components/TSForm";
 import { useDispatch, useSelector } from "react-redux";
-import { setCocktailsList, setNumOfResults } from "../../redux/cocktailSlice";
+import Card from "../../components/Card";
+import { ICocktail, IForm } from "../../common/Types";
+import Loader from "../../components/Loader";
+import Pagination from "../../components/Pagination";
 import { RootState } from "../../redux/store";
+import { setCocktailsList, setNumOfResults } from "../../redux/cocktailSlice";
+import TSButton from "../../components/TSButton";
+import TSForm from "../../components/TSForm";
+import TSInput from "../../components/TSInput";
+import "./style.scss";
 
 const Home: React.FC = () => {
   const [cocktails, setCocktails] = useState<ICocktail[]>([]);
@@ -20,9 +22,9 @@ const Home: React.FC = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [cocktailAddedText, setCocktailAddedText] = useState<string>("");
+  const formRef = useRef<FormikProps<IForm>>(null!);
   const numOfItemsInPage = 8;
   const COCKTAILS_API_URL = import.meta.env.VITE_COCKTAILS_API_URL;
-  const SEARCH_API_URL = import.meta.env.VITE_SEARCH_API_URL;
   const dispatch = useDispatch();
   const { numOfResults, cocktailsList } = useSelector(
     (state: RootState) => state.cocktail
@@ -123,11 +125,11 @@ const Home: React.FC = () => {
   const onCloseModal = () => {
     setIsModalOpen(false);
     setCocktailAddedText("");
+    formRef?.current.resetForm();
   };
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Loader />;
   if (error) return <p>{error}</p>;
-
   return (
     <>
       <div className="actions-container">
@@ -151,7 +153,11 @@ const Home: React.FC = () => {
           onCancel={onCloseModal}
           footer={null}
         >
-          <TSForm onSubmit={onSubmit} cocktailAddedText={cocktailAddedText} />
+          <TSForm
+            onSubmit={onSubmit}
+            cocktailAddedText={cocktailAddedText}
+            formRef={formRef}
+          />
         </Modal>
       </div>
       <div className="home-container">
