@@ -103,14 +103,23 @@ const Home: React.FC = () => {
   };
 
   const onSubmit = (values: IForm) => {
-    const existingData = JSON.parse(
-      localStorage.getItem("cocktailsData") || "[]"
-    );
-    const updatedData = [
-      ...existingData,
+    const updatedLocalStorageData = [
+      ...JSON.parse(localStorage.getItem("cocktailsData") || "[]"),
       { ...values, idDrink: createDrinkId(), isAdded: true },
     ];
-    localStorage.setItem("cocktailsData", JSON.stringify(updatedData));
+    localStorage.setItem(
+      "cocktailsData",
+      JSON.stringify(updatedLocalStorageData)
+    );
+
+    const updatedCocktailsList = [
+      { ...values, idDrink: createDrinkId(), isAdded: true },
+      ...cocktailsList,
+    ];
+    dispatch(setCocktailsList(updatedCocktailsList));
+    dispatch(setNumOfResults(updatedCocktailsList.length));
+    setCocktails(updatedCocktailsList.filter((_, i) => i < numOfItemsInPage));
+
     setCocktailAddedText("Cocktail added successfully!");
   };
 
@@ -125,7 +134,7 @@ const Home: React.FC = () => {
   const onCloseModal = () => {
     setIsModalOpen(false);
     setCocktailAddedText("");
-    formRef?.current.resetForm();
+    formRef?.current?.resetForm();
   };
 
   if (isLoading) return <Loader />;
@@ -164,6 +173,7 @@ const Home: React.FC = () => {
         {cocktails.map((item) => {
           return (
             <Card
+              key={item.idDrink}
               strDrink={item.strDrink}
               strDrinkThumb={item.strDrinkThumb}
               idDrink={item.idDrink}

@@ -1,13 +1,13 @@
 import React from "react";
+import cocktailIcon from "../../assets/cocktail-icon.png";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ICocktail } from "../../common/Types";
 import { RootState } from "../../redux/store";
 import "./style.scss";
-
 const Card: React.FC<ICocktail> = ({ strDrink, strDrinkThumb, idDrink }) => {
   const { cocktailsList } = useSelector((state: RootState) => state.cocktail);
-  const cocktailItem = cocktailsList.filter((x) => x.idDrink === idDrink)[0];
+  const cocktailItem = cocktailsList.find((x) => x.idDrink === idDrink);
 
   return (
     <Link
@@ -15,7 +15,7 @@ const Card: React.FC<ICocktail> = ({ strDrink, strDrinkThumb, idDrink }) => {
       className="card-container"
       state={{ cocktailItem }}
     >
-      <img className="image" src={strDrinkThumb} />
+      <img className="image" src={strDrinkThumb || cocktailIcon} />
       <h2 className="title">{strDrink}</h2>
     </Link>
   );

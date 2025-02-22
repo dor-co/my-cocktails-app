@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import cocktailIcon from "../../assets/cocktail-icon.png";
 import { IRecipe } from "../../common/Types";
 import Loader from "../../components/Loader";
 import "./style.scss";
@@ -61,7 +62,7 @@ const Recipe: React.FC = () => {
             {recipe?.strInstructions}
           </p>
         </div>
-        <img src={recipe?.strDrinkThumb} />
+        <img src={recipe?.strDrinkThumb || cocktailIcon} />
       </div>
     </div>
   );
